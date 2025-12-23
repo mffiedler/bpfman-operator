@@ -50,8 +50,6 @@ var (
 		},
 		Spec: v1alpha1.ConfigSpec{
 			Namespace: "bpfman",
-			Image:     "quay.io/bpfman/bpfman:latest",
-			LogLevel:  "bpfman=info", // Changed from debug to info
 			Configuration: `[database]
 max_retries = 35
 millisec_delay = 10000
@@ -62,6 +60,10 @@ verify_enabled = true`,
 				Image:           "quay.io/bpfman/bpfman-agent:latest",
 				LogLevel:        "debug", // Changed from info to debug
 				HealthProbePort: 8175,
+			},
+			Daemon: v1alpha1.DaemonSpec{
+				Image:    "quay.io/bpfman/bpfman:latest",
+				LogLevel: "bpfman=info", // Changed from debug to info
 			},
 		},
 	}
@@ -511,7 +513,7 @@ func testConfigCreation(ctx context.Context, t *testing.T, newConfig *v1alpha1.C
 	if configMap.Data["bpfman.agent.log.level"] != newConfig.Spec.Agent.LogLevel {
 		return fmt.Errorf("config map bpfman.agent.log.level not correct")
 	}
-	if configMap.Data["bpfman.log.level"] != newConfig.Spec.LogLevel {
+	if configMap.Data["bpfman.log.level"] != newConfig.Spec.Daemon.LogLevel {
 		return fmt.Errorf("config map bpfman.log.level not correct")
 	}
 

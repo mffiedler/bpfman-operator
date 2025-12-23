@@ -183,13 +183,15 @@ func setupTestEnvironment(isOpenShift bool) (*BpfmanConfigReconciler, *v1alpha1.
 			Name: internal.BpfmanConfigName,
 		},
 		Spec: v1alpha1.ConfigSpec{
-			Image: "FAKE-IMAGE",
 			Agent: v1alpha1.AgentSpec{
 				Image:           "BPFMAN_AGENT_IS_SCARY",
 				LogLevel:        logLevel,
 				HealthProbePort: 8175,
 			},
-			LogLevel:  logLevel,
+			Daemon: v1alpha1.DaemonSpec{
+				Image:    "FAKE-IMAGE",
+				LogLevel: logLevel,
+			},
 			Namespace: "bpfman",
 		},
 	}
