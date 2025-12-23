@@ -67,13 +67,28 @@ spec:
                 description: Configuration holds the content of bpfman.toml.
                 minLength: 1
                 type: string
-              image:
-                description: Image holds the image of the bpfman DaemonSets.
-                minLength: 1
-                type: string
-              logLevel:
-                description: LogLevel holds the log level for the bpfman-operator.
-                type: string
+              daemon:
+                description: Daemon holds the configuration for the bpfman daemon.
+                properties:
+                  bpffsInitImage:
+                    description: BpffsInitImage holds the image for the init container
+                      that mounts bpffs.
+                    type: string
+                  csiRegistrarImage:
+                    description: |-
+                      CsiRegistrarImage holds the image for the CSI node driver registrar
+                      sidecar container.
+                    type: string
+                  image:
+                    description: Image holds the image for the bpfman daemon.
+                    minLength: 1
+                    type: string
+                  logLevel:
+                    description: LogLevel holds the log level for the bpfman daemon.
+                    type: string
+                required:
+                - image
+                type: object
               namespace:
                 description: |-
                   Namespace holds the namespace where bpfman-operator resources shall be
@@ -81,7 +96,6 @@ spec:
                 type: string
             required:
             - configuration
-            - image
             type: object
           status:
             description: status reflects the status of the bpfman-operator configuration.
