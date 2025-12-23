@@ -155,7 +155,7 @@ func (r *BpfmanConfigReconciler) reconcileCM(ctx context.Context, bpfmanConfig *
 		Data: map[string]string{
 			internal.BpfmanTOML:          bpfmanConfig.Spec.Configuration,
 			internal.BpfmanAgentLogLevel: bpfmanConfig.Spec.Agent.LogLevel,
-			internal.BpfmanLogLevel:      bpfmanConfig.Spec.LogLevel,
+			internal.BpfmanLogLevel:      bpfmanConfig.Spec.Daemon.LogLevel,
 		},
 	}
 	return assureResource(ctx, r, bpfmanConfig, cm, func(existing, desired *corev1.ConfigMap) bool {
@@ -251,7 +251,7 @@ func configureBpfmanDs(staticBpfmanDS *appsv1.DaemonSet, config *v1alpha1.Config
 	bpfmanHealthProbeAddr := healthProbeAddress(config.Spec.Agent.HealthProbePort)
 
 	newAnnotations := map[string]string{
-		fmt.Sprintf("%s.%s", internal.APIPrefix, internal.BpfmanLogLevel):      config.Spec.LogLevel,
+		fmt.Sprintf("%s.%s", internal.APIPrefix, internal.BpfmanLogLevel):      config.Spec.Daemon.LogLevel,
 		fmt.Sprintf("%s.%s", internal.APIPrefix, internal.BpfmanAgentLogLevel): config.Spec.Agent.LogLevel,
 		fmt.Sprintf("%s.%s", internal.APIPrefix, internal.BpfmanTOML):          config.Spec.Configuration,
 	}
@@ -269,7 +269,7 @@ func configureBpfmanDs(staticBpfmanDS *appsv1.DaemonSet, config *v1alpha1.Config
 	for cindex, container := range staticBpfmanDS.Spec.Template.Spec.Containers {
 		switch container.Name {
 		case internal.BpfmanContainerName:
-			staticBpfmanDS.Spec.Template.Spec.Containers[cindex].Image = config.Spec.Image
+			staticBpfmanDS.Spec.Template.Spec.Containers[cindex].Image = config.Spec.Daemon.Image
 		case internal.BpfmanAgentContainerName:
 			staticBpfmanDS.Spec.Template.Spec.Containers[cindex].Image = config.Spec.Agent.Image
 			for aindex, arg := range container.Args {
@@ -280,8 +280,19 @@ func configureBpfmanDs(staticBpfmanDS *appsv1.DaemonSet, config *v1alpha1.Config
 					}
 				}
 			}
+		case internal.BpfmanCsiDriverRegistrarName:
+			if config.Spec.Daemon.CsiRegistrarImage != "" {
+				staticBpfmanDS.Spec.Template.Spec.Containers[cindex].Image = config.Spec.Daemon.CsiRegistrarImage
+			}
 		default:
 			// Do nothing
+		}
+	}
+
+	// Configure init containers
+	for cindex, container := range staticBpfmanDS.Spec.Template.Spec.InitContainers {
+		if container.Name == internal.BpfmanInitContainerName && config.Spec.Daemon.BpffsInitImage != "" {
+			staticBpfmanDS.Spec.Template.Spec.InitContainers[cindex].Image = config.Spec.Daemon.BpffsInitImage
 		}
 	}
 }
