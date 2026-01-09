@@ -33,6 +33,8 @@ const (
 	BpfmanRestrictedSccName       = "bpfman-restricted"
 	BpfmanContainerName           = "bpfman"
 	BpfmanAgentContainerName      = "bpfman-agent"
+	BpfmanInitContainerName       = "mount-bpffs"
+	BpfmanCsiDriverRegistrarName  = "node-driver-registrar"
 	BpfmanMetricsProxyContainer   = "metrics-proxy"
 	BpfmanDaemonManifestPath      = "./config/bpfman-deployment/daemonset.yaml"
 	BpfmanMetricsProxyPath        = "./config/bpfman-deployment/metrics-proxy-daemonset.yaml"

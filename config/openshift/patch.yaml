@@ -19,6 +19,7 @@ metadata:
 spec:
   ## Can be configured at runtime
   namespace: bpfman
-  logLevel: info
   agent:
+    logLevel: info
+  daemon:
     logLevel: info

@@ -52,8 +52,6 @@ var (
 		},
 		Spec: v1alpha1.ConfigSpec{
 			Namespace: "bpfman",
-			Image:     "quay.io/bpfman/bpfman:latest",
-			LogLevel:  "bpfman=debug",
 			Configuration: `[database]
 max_retries = 30
 millisec_delay = 10000
@@ -64,6 +62,10 @@ verify_enabled = true`,
 				Image:           "CHANGEME",
 				LogLevel:        "info",
 				HealthProbePort: 8175,
+			},
+			Daemon: v1alpha1.DaemonSpec{
+				Image:    "quay.io/bpfman/bpfman:latest",
+				LogLevel: "bpfman=debug",
 			},
 		},
 	}

@@ -46,17 +46,31 @@ type ConfigSpec struct {
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
 	Configuration string `json:"configuration"`
-	// Image holds the image of the bpfman DaemonSets.
+	// Daemon holds the configuration for the bpfman daemon.
+	// +required
+	Daemon DaemonSpec `json:"daemon,omitempty"`
+	// Namespace holds the namespace where bpfman-operator resources shall be
+	// deployed.
+	Namespace string `json:"namespace,omitempty"`
+}
+
+// DaemonSpec defines the desired state of the bpfman daemon.
+type DaemonSpec struct {
+	// BpffsInitImage holds the image for the init container that mounts bpffs.
+	// +optional
+	BpffsInitImage string `json:"bpffsInitImage,omitempty"`
+	// CsiRegistrarImage holds the image for the CSI node driver registrar
+	// sidecar container.
+	// +optional
+	CsiRegistrarImage string `json:"csiRegistrarImage,omitempty"`
+	// Image holds the image for the bpfman daemon.
 	// +required
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
 	Image string `json:"image"`
-	// LogLevel holds the log level for the bpfman-operator.
+	// LogLevel holds the log level for the bpfman daemon.
 	// +optional
 	LogLevel string `json:"logLevel,omitempty"`
-	// Namespace holds the namespace where bpfman-operator resources shall be
-	// deployed.
-	Namespace string `json:"namespace,omitempty"`
 }
 
 // AgentSpec defines the desired state of the bpfman agent.
