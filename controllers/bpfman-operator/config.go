@@ -390,8 +390,14 @@ func load[T client.Object](t T, path, name string) (T, error) {
 func assureResource[T client.Object](ctx context.Context, r *BpfmanConfigReconciler,
 	bpfmanConfig *v1alpha1.Config, resource T, needsUpdate func(existing T, desired T) bool) error {
 	if isOverridden(resource, bpfmanConfig.Spec.Overrides, r.Scheme) {
+		// Resolve GVK via the scheme to get the kind reliably
+		kind := ""
+		gvks, _, err := r.Scheme.ObjectKinds(resource)
+		if err == nil && len(gvks) > 0 {
+			kind = gvks[0].Kind
+		}
 		r.Logger.Info("Skipping unmanaged resource (override in place)",
-			"kind", resource.GetObjectKind().GroupVersionKind().Kind,
+			"kind", kind,
 			"namespace", resource.GetNamespace(), "name", resource.GetName())
 		return nil
 	}
